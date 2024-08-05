@@ -4,6 +4,7 @@
 #include "formula.h"
 
 #include <functional>
+#include <optional>
 #include <unordered_set>
 
 class Sheet;
@@ -21,16 +22,17 @@ public:
     std::vector<Position> GetReferencedCells() const override;
 
     bool IsReferenced() const;
+    void InvalidateAllCache(bool flag);
 
 private:
     class Impl;
     class EmptyImpl;
     class TextImpl;
     class FormulaImpl;
+    bool HasCircularDependency(const Impl& impl) const;
 
+    Sheet& sheet_;
     std::unique_ptr<Impl> impl_;
-
-    // Добавьте поля и методы для связи с таблицей, проверки циклических 
-    // зависимостей, графа зависимостей и т. д.
-
+    std::unordered_set<Cell*> dependent_cells_;
+    std::unordered_set<Cell*> referenced_cells_;
 };
